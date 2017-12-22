@@ -11,6 +11,8 @@ struct error_state : public bulb_state {
 	error_state(const std::string& message) { std::cout << "error: " << message  << std::endl; }
 };
 
+std::mutex mutex;
+
 int main(int argc, char *argv[]) {
 	ris::transition_table<bulb_state> tt;
 	tt.add<on_state, off_state>();
@@ -24,6 +26,9 @@ int main(int argc, char *argv[]) {
 	sh.change<on_state>();
 	sh.change<on_state>();
 	sh.change<error_state>("bulb overheated");
+
+  ris::async_container<bulb_state> con;
+  con.add_handler(0, &sh);
 
 #ifdef _WIN32
 	std::cin.get();
